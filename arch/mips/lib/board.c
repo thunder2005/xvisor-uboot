@@ -185,7 +185,7 @@ void board_init_f(ulong bootflag)
 	/* round down to next 4 kB limit.
 	 */
 	addr &= ~(4096 - 1);
-	debug ("Top of RAM usable for U-Boot at: %08lx\n", addr);
+	printf("Top of RAM usable for U-Boot at: %08lx\n", addr);
 
 	/* Reserve memory for U-Boot code, data & bss
 	 * round down to next 16 kB limit
@@ -193,12 +193,12 @@ void board_init_f(ulong bootflag)
 	addr -= len;
 	addr &= ~(16 * 1024 - 1);
 
-	debug ("Reserving %ldk for U-Boot at: %08lx\n", len >> 10, addr);
+	printf ("Reserving %ldk for U-Boot at: %08lx\n", len >> 10, addr);
 
 	 /* Reserve memory for malloc() arena.
 	 */
 	addr_sp = addr - TOTAL_MALLOC_LEN;
-	debug ("Reserving %dk for malloc() at: %08lx\n",
+	printf ("Reserving %dk for malloc() at: %08lx\n",
 			TOTAL_MALLOC_LEN >> 10, addr_sp);
 
 	/*
@@ -208,19 +208,19 @@ void board_init_f(ulong bootflag)
 	addr_sp -= sizeof(bd_t);
 	bd = (bd_t *)addr_sp;
 	gd->bd = bd;
-	debug ("Reserving %zu Bytes for Board Info at: %08lx\n",
+	printf ("Reserving %zu Bytes for Board Info at: %08lx\n",
 			sizeof(bd_t), addr_sp);
 
 	addr_sp -= sizeof(gd_t);
 	id = (gd_t *)addr_sp;
-	debug ("Reserving %zu Bytes for Global Data at: %08lx\n",
+	printf ("Reserving %zu Bytes for Global Data at: %08lx\n",
 			sizeof (gd_t), addr_sp);
 
 	/* Reserve memory for boot params.
 	 */
 	addr_sp -= CONFIG_SYS_BOOTPARAMS_LEN;
 	bd->bi_boot_params = addr_sp;
-	debug ("Reserving %dk for boot params() at: %08lx\n",
+	printf ("Reserving %dk for boot params() at: %08lx\n",
 			CONFIG_SYS_BOOTPARAMS_LEN >> 10, addr_sp);
 
 	/*
@@ -235,7 +235,7 @@ void board_init_f(ulong bootflag)
 	*s-- = 0;
 	*s-- = 0;
 	addr_sp = (ulong)s;
-	debug ("Stack Pointer at: %08lx\n", addr_sp);
+	printf ("Stack Pointer at: %08lx\n", addr_sp);
 
 	/*
 	 * Save local variables to board info struct
@@ -245,6 +245,8 @@ void board_init_f(ulong bootflag)
 	bd->bi_baudrate	= gd->baudrate;		/* Console Baudrate */
 
 	memcpy (id, (void *)gd, sizeof (gd_t));
+
+	printf("Relocatoin addr: 0x%X\n", addr);
 
 	relocate_code (addr_sp, id, addr);
 

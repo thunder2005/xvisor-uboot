@@ -69,13 +69,18 @@ int do_bootelf (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 
 	sload = saddr = NULL;
 	if (argc == 3) {
+		printf("ARGC 3\n");
 		sload = argv[1];
 		saddr = argv[2];
+		printf ("sload %s saddr %s\n", sload, saddr);
 	} else if (argc == 2) {
-		if (argv[1][0] == '-')
+		if (argv[1][0] == '-') {
 			sload = argv[1];
-		else
+			printf("sload - %s\n", sload);
+		} else {
 			saddr = argv[1];
+			printf("saddr - %s\n", saddr);
+		}
 	}
 
 	if (saddr)
@@ -83,13 +88,17 @@ int do_bootelf (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[])
 	else
 		addr = load_addr;
 
+	printf("Addr: 0x%X\n", addr);
 	if (!valid_elf_image (addr))
 		return 1;
 
-	if (sload && sload[1] == 'p')
+	if (sload && sload[1] == 'p') {
+		printf("Loading via phdr\n");
 		addr = load_elf_image_phdr(addr);
-	else
+	} else {
 		addr = load_elf_image_shdr(addr);
+		printf("loading via shddr %X\n", addr);
+	}
 
 	printf ("## Starting application at 0x%08lx ...\n", addr);
 
@@ -287,7 +296,7 @@ static unsigned long load_elf_image_phdr(unsigned long addr)
 	for (i = 0; i < ehdr->e_phnum; ++i) {
 		void *dst = (void *) phdr->p_paddr;
 		void *src = (void *) addr + phdr->p_offset;
-		debug("Loading phdr %i to 0x%p (%i bytes)\n",
+		printf("Loading phdr %i to 0x%p (%i bytes)\n",
 			i, dst, phdr->p_filesz);
 		if (phdr->p_filesz)
 			memcpy(dst, src, phdr->p_filesz);
@@ -297,6 +306,7 @@ static unsigned long load_elf_image_phdr(unsigned long addr)
 		++phdr;
 	}
 
+	printf("ELF Entry: 0x%X\n", ehdr->e_entry);
 	return ehdr->e_entry;
 }
 
@@ -330,7 +340,7 @@ static unsigned long load_elf_image_shdr(unsigned long addr)
 		}
 
 		if (strtab) {
-			debug("%sing %s @ 0x%08lx (%ld bytes)\n",
+			printf("%sing %s @ 0x%08lx (%ld bytes)\n",
 				(shdr->sh_type == SHT_NOBITS) ?
 					"Clear" : "Load",
 				&strtab[shdr->sh_name],
