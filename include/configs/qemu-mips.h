@@ -54,7 +54,7 @@
 	"load=tftp 80500000 ${u-boot}\0"				\
 	""
 
-#define CONFIG_BOOTCOMMAND	"bootp;bootelf"
+#define CONFIG_BOOTCOMMAND	"cp.b 0xbfd00000 0x81000000 0x100000;bootelf 0x81000000"
 
 /*
  * BOOTP options
